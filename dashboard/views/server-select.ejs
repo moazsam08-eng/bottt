@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Server — Moaz Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#05060A;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .fade-up{animation:fadeUp .5s ease both}
+    .delay-1{animation-delay:.1s}
+    .delay-2{animation-delay:.18s}
+    .delay-3{animation-delay:.26s}
+    .delay-4{animation-delay:.34s}
+    .grid-bg{
+      background-image:linear-gradient(rgba(88,101,242,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(88,101,242,.04) 1px,transparent 1px);
+      background-size:48px 48px;
+    }
+    .server-card{
+      background:#0F1014;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:1rem;
+      transition:all .2s ease;
+      cursor:pointer;
+    }
+    .server-card:hover{
+      border-color:rgba(88,101,242,.5);
+      background:#13141A;
+      transform:translateY(-2px);
+      box-shadow:0 8px 32px rgba(88,101,242,.15);
+    }
+    .server-card.selected{
+      border-color:#5865F2;
+      background:linear-gradient(135deg,rgba(88,101,242,.12),rgba(88,101,242,.04));
+      box-shadow:0 0 0 1px #5865F2, 0 8px 32px rgba(88,101,242,.2);
+    }
+    .invite-btn{
+      background:linear-gradient(135deg,#5865F2,#4752C4);
+      transition:all .2s ease;
+    }
+    .invite-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(88,101,242,.4);
+    }
+  </style>
+</head>
+<body class="grid-bg min-h-screen flex flex-col items-center justify-center px-4 py-10">
+
+  <!-- Ambient glows -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-[-100px] right-[-60px] w-[400px] h-[400px] bg-indigo-600/8 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-80px] left-[-60px] w-[350px] h-[350px] bg-purple-600/8 rounded-full blur-[90px]"></div>
+  </div>
+
+  <div class="relative w-full max-w-3xl">
+
+    <!-- Header -->
+    <div class="flex flex-col items-center mb-10 fade-up">
+      <div class="w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-indigo-500/30 shadow-xl mb-4" style="animation:float 4s ease-in-out infinite">
+        <img src="/images/logo.png" alt="Moaz Studio" class="w-full h-full object-cover">
+      </div>
+      <h1 class="text-2xl font-extrabold text-white tracking-tight">
+        Select a <span class="text-indigo-400">Server</span>
+      </h1>
+      <p class="text-sm text-gray-500 mt-1">Choose the server you want to manage</p>
+
+      <!-- Logged-in user badge -->
+      <% if (typeof userTag !== 'undefined' && userTag) { %>
+      <div class="flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07]">
+        <% if (typeof userAvatar !== 'undefined' && userAvatar) { %>
+          <img src="<%= userAvatar %>" class="w-5 h-5 rounded-full" alt="">
+        <% } else { %>
+          <div class="w-5 h-5 rounded-full bg-indigo-500/30 flex items-center justify-center">
+            <i class="fab fa-discord text-[10px] text-indigo-300"></i>
+          </div>
+        <% } %>
+        <span class="text-xs font-semibold text-gray-300"><%= userTag %></span>
+        <span class="text-[10px] text-gray-600">•</span>
+        <span class="text-[11px] text-emerald-400 font-medium">Logged in</span>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Server Grid -->
+    <% if (guilds.length > 0) { %>
+    <form method="POST" action="/select-server" id="serverForm">
+      <input type="hidden" name="guildId" id="selectedGuildId" value="">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <% guilds.forEach((guild, i) => { %>
+          <div class="server-card p-5 fade-up <%= currentGuildId === guild.id ? 'selected' : '' %>"
+               style="animation-delay:<%= (i * 0.07) + 0.1 %>s"
+               onclick="selectServer('<%= guild.id %>', this)">
+            <div class="flex items-center gap-3 mb-3">
+              <% if (guild.icon) { %>
+                <img src="<%= guild.icon %>" alt="<%= guild.name %>"
+                     class="w-12 h-12 rounded-xl ring-1 ring-white/10 object-cover flex-shrink-0">
+              <% } else { %>
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0 ring-1 ring-indigo-500/20">
+                  <span class="text-indigo-300 font-bold text-lg"><%= guild.name.charAt(0).toUpperCase() %></span>
+                </div>
+              <% } %>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-bold text-white truncate"><%= guild.name %></h3>
+                <p class="text-xs text-gray-500 mt-0.5">
+                  <i class="fas fa-users text-[10px] mr-1"></i><%= guild.memberCount.toLocaleString() %> members
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Bot Active
+              </span>
+              <% if (currentGuildId === guild.id) { %>
+                <span class="text-[11px] font-bold text-indigo-400 flex items-center gap-1">
+                  <i class="fas fa-check-circle text-xs"></i> Selected
+                </span>
+              <% } else { %>
+                <span class="text-[11px] text-gray-600">
+                  <i class="fas fa-arrow-right text-[10px]"></i>
+                </span>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </form>
+    <% } else { %>
+    <div class="text-center py-16 fade-up delay-2">
+      <div class="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center mx-auto mb-4 border border-white/[0.06]">
+        <i class="fas fa-server text-gray-600 text-2xl"></i>
+      </div>
+      <h3 class="text-base font-bold text-gray-400 mb-2">No servers found</h3>
+      <p class="text-sm text-gray-600">The bot isn't in any server yet. Add it using the button below.</p>
+    </div>
+    <% } %>
+
+    <!-- Add to Server -->
+    <div class="mt-2 p-5 rounded-2xl border border-dashed border-indigo-500/25 bg-indigo-500/5 flex flex-col sm:flex-row items-center justify-between gap-4 fade-up delay-3">
+      <div>
+        <h3 class="text-sm font-bold text-white">Add Bot to a New Server</h3>
+        <p class="text-xs text-gray-500 mt-0.5">Invite the bot and it will appear above automatically</p>
+      </div>
+      <a href="https://discord.com/api/oauth2/authorize?client_id=<%= process.env.CLIENT_ID || '' %>&permissions=8&scope=bot%20applications.commands"
+         target="_blank"
+         class="invite-btn flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-bold whitespace-nowrap flex-shrink-0">
+        <i class="fab fa-discord"></i>
+        Invite Bot
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between mt-6 fade-up delay-4">
+      <a href="/logout" class="text-xs text-gray-600 hover:text-red-400 transition-colors flex items-center gap-1.5">
+        <i class="fas fa-right-from-bracket text-[10px]"></i> Logout
+      </a>
+      <span class="text-xs text-gray-700">Powered by <span class="text-indigo-400">Moaz Studio</span></span>
+    </div>
+
+  </div>
+
+  <script>
+    function selectServer(guildId, el) {
+      document.querySelectorAll('.server-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('selectedGuildId').value = guildId;
+      setTimeout(() => document.getElementById('serverForm').submit(), 200);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<%- contentFor('body') %>
+
+<!-- HERO -->
+<div class="relative overflow-hidden rounded-2xl mb-6 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-7 md:p-9">
+  <div class="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+  <div class="absolute -bottom-16 -left-10 w-48 h-48 bg-purple-400/20 rounded-full blur-3xl"></div>
+  <div class="relative z-10">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-[11px] font-bold uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        Online
+      </span>
+      <span class="text-[11px] text-white/60 font-medium">v1.0.0</span>
+    </div>
+    <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
+      <%= currentLang === 'ar' ? 'أهلاً بك في' : 'Welcome to' %> Moaz Studio
+    </h1>
+    <p class="text-white/70 text-sm md:text-base max-w-2xl mb-5">
+      <%= currentLang === 'ar' ? 'تحكم في البوت من مكان واحد. كل اللي محتاجه قدامك في خطوة.' : 'Manage your Discord bot, customize settings, and monitor stats — all in one place.' %>
+    </p>
+    <div class="flex flex-wrap gap-2">
+      <div class="flex items-center gap-2 bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+        <i class="fas fa-bolt text-yellow-300 text-xs"></i>
+        <span class="text-xs font-semibold text-white" data-stat="ping"><%= stats.ping %>ms</span>
+      </div>
+      <div class="flex items-center gap-2 bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+        <i class="fas fa-clock text-blue-300 text-xs"></i>
+        <span class="text-xs font-semibold text-white"><%= stats.uptime %></span>
+      </div>
+      <div class="flex items-center gap-2 bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+        <i class="fas fa-microchip text-purple-300 text-xs"></i>
+        <span class="text-xs font-semibold text-white" data-stat="memory"><%= stats.memoryUsage %> MB</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="group rounded-2xl p-5 bg-[#15171C] border border-white/5 hover:border-indigo-500/40 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+        <i class="fas fa-server text-indigo-400 text-lg"></i>
+      </div>
+      <span class="text-[10px] font-bold uppercase text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">
+        <i class="fas fa-arrow-<%= trends.servers.direction %>"></i> <%= trends.servers.percentage %>%
+      </span>
+    </div>
+    <h3 class="text-3xl font-bold text-white animate-count"><%= stats.servers %></h3>
+    <p class="text-xs font-medium text-gray-500 mt-1"><%= currentLang === 'ar' ? 'سيرفرات' : 'Servers' %></p>
+  </div>
+
+  <div class="group rounded-2xl p-5 bg-[#15171C] border border-white/5 hover:border-emerald-500/40 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+        <i class="fas fa-users text-emerald-400 text-lg"></i>
+      </div>
+      <span class="text-[10px] font-bold uppercase text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">
+        <i class="fas fa-arrow-<%= trends.users.direction %>"></i> <%= trends.users.percentage %>%
+      </span>
+    </div>
+    <h3 class="text-3xl font-bold text-white animate-count"><%= stats.users %></h3>
+    <p class="text-xs font-medium text-gray-500 mt-1"><%= currentLang === 'ar' ? 'مستخدمين' : 'Users' %></p>
+  </div>
+
+  <div class="group rounded-2xl p-5 bg-[#15171C] border border-white/5 hover:border-purple-500/40 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-11 h-11 rounded-xl bg-purple-500/15 flex items-center justify-center">
+        <i class="fas fa-terminal text-purple-400 text-lg"></i>
+      </div>
+      <span class="text-[10px] font-bold uppercase text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md">
+        <i class="fas fa-arrow-<%= trends.commands.direction %>"></i> <%= trends.commands.percentage %>%
+      </span>
+    </div>
+    <h3 class="text-3xl font-bold text-white animate-count"><%= stats.commands %></h3>
+    <p class="text-xs font-medium text-gray-500 mt-1"><%= currentLang === 'ar' ? 'أوامر' : 'Commands' %></p>
+  </div>
+</div>
+
+<!-- TWO COLUMN -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+  <!-- LEFT: Modules -->
+  <div class="lg:col-span-2 rounded-2xl p-6 bg-[#15171C] border border-white/5">
+    <div class="flex justify-between items-center mb-5">
+      <div>
+        <h2 class="text-lg font-bold text-white"><%= currentLang === 'ar' ? 'الأنظمة المفعّلة' : 'Active Modules' %></h2>
+        <p class="text-xs text-gray-500 mt-0.5"><%= currentLang === 'ar' ? 'حالة كل نظام في البوت' : 'Status of all bot systems' %></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <% const modules = [
+        { name: currentLang === 'ar' ? 'الحماية' : 'Protection', desc: moduleStatus.protection.activeRules + (currentLang === 'ar' ? ' قواعد نشطة' : ' active rules'), icon: 'fa-shield-halved', color: 'indigo', enabled: moduleStatus.protection.enabled, link: '/protection' },
+        { name: currentLang === 'ar' ? 'التذاكر' : 'Tickets', desc: moduleStatus.tickets.sections + (currentLang === 'ar' ? ' أنواع' : ' types'), icon: 'fa-ticket', color: 'emerald', enabled: moduleStatus.tickets.enabled, link: '/tickets' },
+        { name: currentLang === 'ar' ? 'التقديمات' : 'Applications', desc: moduleStatus.apply.positions + (currentLang === 'ar' ? ' وظائف' : ' positions'), icon: 'fa-clipboard-list', color: 'purple', enabled: moduleStatus.apply.enabled, link: '/apply' },
+        { name: currentLang === 'ar' ? 'القوانين' : 'Rules', desc: moduleStatus.rules.sections + (currentLang === 'ar' ? ' أقسام' : ' sections'), icon: 'fa-gavel', color: 'amber', enabled: moduleStatus.rules.enabled, link: '/rules' },
+        { name: currentLang === 'ar' ? 'السحوبات' : 'Giveaways', desc: moduleStatus.giveaway && moduleStatus.giveaway.enabled ? (currentLang === 'ar' ? 'نشط' : 'Active') : (currentLang === 'ar' ? 'غير نشط' : 'Inactive'), icon: 'fa-gift', color: 'pink', enabled: moduleStatus.giveaway && moduleStatus.giveaway.enabled, link: '/giveaway' }
+      ] %>
+      <% modules.forEach(m => { %>
+        <a href="<%= m.link %>" class="flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+          <div class="w-10 h-10 rounded-xl bg-<%= m.color %>-500/15 flex items-center justify-center flex-shrink-0">
+            <i class="fas <%= m.icon %> text-<%= m.color %>-400"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-sm font-semibold text-white truncate"><%= m.name %></h3>
+            <p class="text-[11px] text-gray-500 truncate"><%= m.desc %></p>
+          </div>
+          <span class="<%= m.enabled ? 'bg-emerald-500/15 text-emerald-400' : 'bg-gray-500/15 text-gray-500' %> w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-<%= m.enabled ? 'check' : 'xmark' %> text-xs"></i>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- RIGHT: Quick Actions -->
+  <div class="rounded-2xl p-6 bg-[#15171C] border border-white/5">
+    <div class="mb-5">
+      <h2 class="text-lg font-bold text-white"><%= currentLang === 'ar' ? 'وصول سريع' : 'Quick Access' %></h2>
+      <p class="text-xs text-gray-500 mt-0.5"><%= currentLang === 'ar' ? 'إعدادات شائعة' : 'Common settings' %></p>
+    </div>
+
+    <div class="space-y-2">
+      <% const quickLinks = [
+        { path: '/protection', icon: 'fa-shield-halved', en: 'Protection', ar: 'الحماية', color: 'indigo' },
+        { path: '/tickets', icon: 'fa-ticket', en: 'Tickets', ar: 'التذاكر', color: 'emerald' },
+        { path: '/apply', icon: 'fa-user-plus', en: 'Applications', ar: 'التقديمات', color: 'purple' },
+        { path: '/commands/general', icon: 'fa-terminal', en: 'Commands', ar: 'الأوامر', color: 'amber' },
+        { path: '/settings', icon: 'fa-gear', en: 'Bot Settings', ar: 'إعدادات البوت', color: 'rose' }
+      ] %>
+      <% quickLinks.forEach(l => { %>
+        <a href="<%= l.path %>" class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] transition-all group">
+          <div class="w-9 h-9 rounded-lg bg-<%= l.color %>-500/15 flex items-center justify-center">
+            <i class="fas <%= l.icon %> text-<%= l.color %>-400 text-sm"></i>
+          </div>
+          <span class="flex-1 text-sm font-semibold text-gray-200"><%= currentLang === 'ar' ? l.ar : l.en %></span>
+          <i class="fas fa-chevron-right text-gray-600 text-xs group-hover:text-white transition-colors"></i>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- HEALTH BAR -->
+<div class="rounded-2xl p-6 bg-[#15171C] border border-white/5 mb-6">
+  <div class="flex justify-between items-center mb-5">
+    <div>
+      <h2 class="text-lg font-bold text-white"><%= currentLang === 'ar' ? 'صحة البوت' : 'Bot Health' %></h2>
+      <p class="text-xs text-gray-500 mt-0.5"><%= currentLang === 'ar' ? 'مؤشرات الأداء المباشرة' : 'Live performance metrics' %></p>
+    </div>
+    <button id="refresh-stats" class="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-all">
+      <i class="fas fa-sync-alt mr-1"></i> <%= currentLang === 'ar' ? 'تحديث' : 'Refresh' %>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <% 
+      const pingPct = Math.max(5, Math.min(100, 100 - (stats.ping / 3)));
+      const memPct = Math.max(5, Math.min(100, (stats.memoryUsage / 600) * 100));
+      const protPct = Math.min(100, (stats.protection.activeProtections / 10) * 100);
+    %>
+    <div>
+      <div class="flex justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-400">Ping</span>
+        <span class="text-xs font-bold text-white"><%= stats.ping %> ms</span>
+      </div>
+      <div class="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r <%= stats.ping > 200 ? 'from-red-500 to-red-400' : stats.ping > 100 ? 'from-amber-500 to-amber-400' : 'from-emerald-500 to-emerald-400' %> rounded-full transition-all" style="width: <%= pingPct %>%"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-400">Memory</span>
+        <span class="text-xs font-bold text-white"><%= stats.memoryUsage %> MB</span>
+      </div>
+      <div class="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r <%= stats.memoryUsage > 500 ? 'from-red-500 to-red-400' : stats.memoryUsage > 200 ? 'from-amber-500 to-amber-400' : 'from-emerald-500 to-emerald-400' %> rounded-full transition-all" style="width: <%= memPct %>%"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-400">Uptime</span>
+        <span class="text-xs font-bold text-white"><%= stats.uptime %></span>
+      </div>
+      <div class="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" style="width: 100%"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-400"><%= currentLang === 'ar' ? 'الحماية' : 'Protection' %></span>
+        <span class="text-xs font-bold text-white"><%= stats.protection.activeProtections %> <%= currentLang === 'ar' ? 'نشط' : 'active' %></span>
+      </div>
+      <div class="h-2 bg-white/[0.04] rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all" style="width: <%= protPct %>%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT ACTIVITY -->
+<div class="rounded-2xl p-6 bg-[#15171C] border border-white/5">
+  <h2 class="text-lg font-bold text-white mb-5"><%= currentLang === 'ar' ? 'النشاط الأخير' : 'Recent Activity' %></h2>
+  
+  <div class="relative">
+    <div class="absolute top-2 bottom-2 left-3.5 w-px bg-white/[0.08]"></div>
+    <div class="space-y-4">
+      <% recentActivity.forEach(activity => { %>
+        <div class="relative flex items-start gap-3">
+          <div class="h-7 w-7 rounded-full bg-<%= activity.color %>-500/20 ring-4 ring-[#15171C] flex items-center justify-center z-10 flex-shrink-0">
+            <i class="fas fa-<%= activity.icon %> text-<%= activity.color %>-400 text-[10px]"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-sm font-semibold text-white"><%= activity.title %></h3>
+            <p class="text-xs text-gray-500"><%= activity.description %></p>
+            <span class="block text-[11px] text-gray-600 mt-0.5"><%= activity.timeAgo %></span>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>

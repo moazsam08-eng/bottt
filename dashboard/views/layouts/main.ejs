@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="<%= locals.currentLang %>" dir="<%= locals.currentLang === 'ar' ? 'rtl' : 'ltr' %>" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.title %> - Moaz® Studio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script src="/js/main.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/utils.js"></script>
+    
+    <script>
+        console.log('Current path:', '<%= locals.path %>');
+    </script>
+    
+    <% 
+    const pagePath = locals.path || '';
+    console.log('Detected page path:', pagePath);
+    
+    const pageMatches = (pattern) => {
+        if (typeof pattern === 'string') {
+            const match = pagePath === pattern;
+            console.log(`Matching ${pattern} against ${pagePath}: ${match}`);
+            return match;
+        }
+        const match = pattern.test(pagePath);
+        console.log(`Matching ${pattern} against ${pagePath}: ${match}`);
+        return match;
+    };
+    
+    const pageScripts = [
+        { path: /^\/commands/, script: 'commands.js' },
+        { path: '/logs', script: 'logs.js' },
+        { path: '/protection', script: 'protection.js' },
+        { path: '/tickets', script: 'tickets.js' },
+        { path: '/apply', script: 'apply.js' },
+        { path: '/rules', script: 'rules.js' },
+        { path: '/giveaway', script: 'giveaway.js' },
+        { path: '/tempchannels', script: 'tempChannels.js' },
+        { path: '/autoreply', script: 'autoReply.js' },
+        { path: '/suggestions', script: 'suggestions.js' },
+        { path: '/settings', script: 'settings.js' }
+    ];
+    
+    pageScripts.forEach(item => {
+        if (pageMatches(item.path)) { 
+    %>
+        <script src="/js/<%= item.script %>"></script>
+        <script>console.log('Loaded script: <%= item.script %> for path: <%= pagePath %>');</script>
+    <% 
+        }
+    });
+    %>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .animate-fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#0B0C10] text-gray-100">
+    <%- typeof renderPartial === 'function' ? renderPartial('sidebar') : '<div class="error">Sidebar could not be loaded</div>' %>
+    
+    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle mobile navigation" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div id="mobileNavOverlay" class="mobile-nav-overlay"></div>
+
+    <!-- Top bar -->
+    <header class="sticky top-0 z-30 flex items-center justify-between px-6 py-3.5 bg-[#0B0C10]/90 backdrop-blur border-b border-white/[0.05]">
+        <div class="flex items-center gap-3">
+            <div>
+                <h2 class="text-sm font-bold text-white"><%= locals.title || 'Dashboard' %></h2>
+                <p class="text-[11px] text-gray-500"><%= locals.breadcrumbs || 'Home' %></p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <select onchange="window.location.href='?lang='+this.value"
+                    class="text-xs bg-white/[0.04] border border-white/[0.06] text-gray-300 rounded-lg px-3 py-1.5 outline-none cursor-pointer hover:bg-white/[0.08] transition-colors">
+                <option value="en" class="bg-[#15171C]" <%= currentLang === 'en' ? 'selected' : '' %>>🇺🇸 EN</option>
+                <option value="ar" class="bg-[#15171C]" <%= currentLang === 'ar' ? 'selected' : '' %>>🇸🇦 AR</option>
+            </select>
+            <a href="/logout"
+               class="flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-red-400 px-3 py-1.5 rounded-lg bg-white/[0.03] hover:bg-red-500/10 border border-white/[0.05] hover:border-red-500/20 transition-all">
+                <i class="fas fa-right-from-bracket"></i>
+                <span class="hidden sm:inline">Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <%- body %>
+    </div>
+
+    <!-- Footer -->
+    <div class="ml-[280px] px-8 py-4 border-t border-white/[0.04] flex items-center justify-between">
+        <span class="text-xs text-gray-600">Powered by <span class="text-indigo-400 font-semibold">Moaz Studio</span></span>
+        <span class="text-xs text-gray-600">v1.0.0</span>
+    </div>
+    
+    <%- defineContent('scripts') %>
+</body>
+</html> 

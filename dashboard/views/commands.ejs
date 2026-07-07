@@ -1,0 +1,141 @@
+<%- contentFor('body') %>
+
+<div class="space-y-5">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold text-white tracking-tight"><%= locale.dashboard.commands.title %></h1>
+      <p class="text-sm text-gray-500 mt-0.5"><%= commands.length %> commands available</p>
+    </div>
+    <div class="flex gap-2 flex-wrap">
+      <% [
+        { href: '/commands/general',    label: locale.dashboard.commands.general,              icon: 'fa-users',      active: page === 'general' },
+        { href: '/commands/moderation', label: locale.dashboard.commands.moderation,            icon: 'fa-shield-halved', active: page === 'moderation' },
+        { href: '/commands/utility',    label: locale.dashboard.commands.utility || 'Utility',  icon: 'fa-wrench',     active: page === 'utility' }
+      ].forEach(btn => { %>
+        <a href="<%= btn.href %>"
+           class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                  <%= btn.active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/[0.04] text-gray-300 hover:bg-white/[0.08] border border-white/[0.06]' %>">
+          <i class="fas <%= btn.icon %> text-xs"></i>
+          <%= btn.label %>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="relative">
+    <i class="fas fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+    <input type="text" id="commandSearch"
+           placeholder="<%= locale.dashboard.commands.search %>"
+           class="w-full bg-[#15171C] border border-white/[0.06] focus:border-indigo-500/50 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-all focus:ring-1 focus:ring-indigo-500/20">
+  </div>
+
+  <!-- Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="commandsGrid">
+    <% commands.forEach(command => { %>
+      <div class="command-card group rounded-2xl p-5 bg-[#15171C] border border-white/[0.05] hover:border-indigo-500/30 transition-all" data-command="<%= command.name %>">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex-1 min-w-0 pr-3">
+            <h3 class="text-sm font-bold text-white truncate"><%= command.name %></h3>
+            <p class="text-xs text-gray-500 mt-0.5 line-clamp-2"><%= command.description %></p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+            <input type="checkbox" class="sr-only peer command-toggle"
+                   data-command="<%= command.name %>" <%= command.enabled ? 'checked' : '' %>>
+            <div class="w-10 h-5 rounded-full bg-white/[0.08] peer-checked:bg-indigo-600 transition-colors relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-5"></div>
+          </label>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <% command.aliases.forEach(alias => { %>
+            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-300 text-[11px] font-medium rounded-md border border-indigo-500/15">
+              <%= alias %>
+            </span>
+          <% }) %>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="flex items-center gap-1.5 text-xs text-gray-500">
+            <i class="fas fa-clock text-[10px]"></i>
+            <%= command.cooldown %>s cooldown
+          </span>
+          <button type="button"
+                  onclick="openPermissionsModal('<%= command.name %>')"
+                  class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-indigo-400 transition-colors">
+            <i class="fas fa-sliders text-[10px]"></i>
+            <%= locale.dashboard.commands.managePermissions %>
+          </button>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Permissions Modal -->
+<div id="permissionsModal" class="fixed inset-0 z-50 hidden">
+  <div class="fixed inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="fixed inset-0 flex items-center justify-center p-4">
+    <div class="relative bg-[#0F1014] border border-white/[0.08] rounded-2xl max-w-2xl w-full p-6 shadow-2xl">
+      <button type="button" onclick="closePermissionsModal()"
+              class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white transition-all">
+        <i class="fas fa-xmark text-sm"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+          <i class="fas fa-shield-halved text-indigo-400"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">
+            <%= locale.dashboard.commands.permissionsTitle %>:
+            <span id="modalCommandName" class="text-indigo-400"></span>
+          </h3>
+          <p class="text-xs text-gray-500 mt-0.5" id="modalCommandDesc"></p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-xl p-4 bg-white/[0.02] border border-white/[0.06]">
+          <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><%= locale.dashboard.commands.aliases %></h4>
+          <div class="flex flex-wrap gap-2 mb-3" id="aliasesList"></div>
+          <div class="flex gap-2">
+            <input type="text" id="newAlias"
+                   class="flex-1 bg-[#1A1C22] border border-white/[0.08] focus:border-indigo-500/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none transition-all"
+                   placeholder="<%= locale.dashboard.commands.newAlias %>">
+            <button onclick="addAlias()"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-colors">
+              <i class="fas fa-plus mr-1"></i> <%= locale.dashboard.commands.add %>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><%= locale.dashboard.commands.enabledRoles %></label>
+            <select multiple id="enabledRoles"
+                    class="w-full bg-[#1A1C22] border border-white/[0.08] text-gray-200 rounded-lg px-3 py-2 max-h-40 overflow-y-auto focus:outline-none focus:border-indigo-500/50 text-sm">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"><%= locale.dashboard.commands.disabledRoles %></label>
+            <select multiple id="disabledRoles"
+                    class="w-full bg-[#1A1C22] border border-white/[0.08] text-gray-200 rounded-lg px-3 py-2 max-h-40 overflow-y-auto focus:outline-none focus:border-indigo-500/50 text-sm">
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 flex justify-end gap-2">
+        <button type="button" onclick="closePermissionsModal()"
+                class="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-gray-300 rounded-xl text-sm font-semibold transition-colors">
+          <%= locale.dashboard.commands.cancel %>
+        </button>
+        <button type="button" onclick="savePermissions()"
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors">
+          <i class="fas fa-floppy-disk mr-1.5"></i> <%= locale.dashboard.commands.save %>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

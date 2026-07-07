@@ -1,0 +1,93 @@
+{
+    "name": "moderation-bot",
+    "version": "1.0.0",
+    "description": "A powerful Discord moderation bot with an advanced dashboard, extensive protection systems, and customizable moderation tools",
+    "main": "dist/index.js",
+    "scripts": {
+        "clean": "rimraf dist",
+        "prebuild": "npm run clean",
+        "build": "tsc",
+        "postbuild": "ts-node scripts/copyFiles.ts",
+        "start": "node dist/index.js",
+        "build:start": "npm run build && npm run start",
+        "predev": "npm run check",
+        "dev": "npm run setup && nodemon -e ts,json,ejs --exec ts-node index.ts",
+        "watch": "tsc -w",
+        "lint": "eslint . --ext .ts",
+        "test": "echo \"No tests specified\" && exit 0",
+        "rebuild": "npm run clean && npm run build",
+        "setup": "ts-node scripts/setup.ts",
+        "check": "ts-node scripts/check-env.ts",
+        "production": "NODE_ENV=production npm run build:start"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/moazsam08-eng/moazzzzz.git"
+    },
+    "keywords": [
+        "discord",
+        "bot",
+        "moderation",
+        "typescript",
+        "dashboard",
+        "discord.js",
+        "protection",
+        "security",
+        "tickets",
+        "giveaway",
+        "logging"
+    ],
+    "author": {
+        "name": "Moaz Studio",
+        "url": "https://github.com/moazsam08-eng"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/moazsam08-eng/moazzzzz/issues"
+    },
+    "homepage": "https://github.com/moazsam08-eng/moazzzzz#readme",
+    "dependencies": {
+        "axios": "^1.7.9",
+        "chokidar": "^3.5.3",
+        "discord-html-transcripts": "^3.2.0",
+        "discord.js": "^14.14.1",
+        "ejs": "^3.1.9",
+        "express": "^4.21.2",
+        "express-ejs-layouts": "^2.5.1",
+        "express-session": "^1.18.1",
+        "mongoose": "^8.0.3",
+        "ms": "^2.1.3",
+        "cookie-parser": "^1.4.6"
+    },
+    "devDependencies": {
+        "@types/ejs": "^3.1.5",
+        "@types/express": "^4.17.21",
+        "@types/express-ejs-layouts": "^2.5.4",
+        "@types/express-session": "^1.17.10",
+        "@types/fs-extra": "^11.0.4",
+        "@types/ms": "^2.1.0",
+        "@types/node": "^20.10.5",
+        "@types/cookie-parser": "^1.4.6",
+        "@types/glob": "^8.1.0",
+        "concurrently": "^8.2.2",
+        "fs-extra": "^11.3.0",
+        "glob": "^10.3.10",
+        "nodemon": "^3.0.3",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3",
+        "rimraf": "^5.0.5",
+        "eslint": "^8.57.0",
+        "@typescript-eslint/eslint-plugin": "^7.0.0",
+        "@typescript-eslint/parser": "^7.0.0"
+    },
+    "contributors": [
+        {
+            "name": "Moaz Studio",
+            "url": "https://github.com/moazsam08-eng"
+        }
+    ],
+    "private": false,
+    "engines": {
+        "node": ">=20.0.0"
+    }
+}

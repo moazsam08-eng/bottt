@@ -1,0 +1,141 @@
+<%- contentFor('body') %>
+
+<div class="space-y-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">⭐ نظام المستويات</h2>
+                <p class="text-sm text-gray-400 mt-1">امنح المستخدمين XP لكل رسالة وارفعهم في المستويات</p>
+            </div>
+            <label class="switch-large">
+                <input type="checkbox" id="leveling-enabled" <%= settings.leveling?.enabled ? 'checked' : '' %>>
+                <span class="slider-large"></span>
+            </label>
+        </div>
+
+        <%# ===== General Settings ===== %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-300 mb-2">🎨 لون الـ Embed</label>
+                <input type="color" id="leveling-color"
+                       value="<%= settings.leveling?.embed?.color || '#5865F2' %>"
+                       class="w-full h-10 rounded-lg cursor-pointer">
+            </div>
+
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-300 mb-2">✨ XP لكل رسالة (الحد الأقصى)</label>
+                <input type="number" id="leveling-xp"
+                       value="<%= settings.leveling?.xpPerMessage || 16 %>"
+                       min="1" max="100"
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+            </div>
+
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-300 mb-2">⏱️ كولداون (بالثواني)</label>
+                <input type="number" id="leveling-cooldown"
+                       value="<%= settings.leveling?.cooldown || 10 %>"
+                       min="0"
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                <p class="text-xs text-gray-500 mt-1">الوقت بين كل رسالة تحسب للـ XP</p>
+            </div>
+
+            <div class="form-group">
+                <label class="block text-sm font-medium text-gray-300 mb-2">📢 قناة رسائل الترقية</label>
+                <select id="leveling-channel" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                    <option value="">نفس القناة التي أرسل فيها المستخدم</option>
+                    <% channels.forEach(ch => { %>
+                        <option value="<%= ch.id %>" <%= settings.leveling?.levelUpChannel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group md:col-span-2">
+                <label class="block text-sm font-medium text-gray-300 mb-2">💬 رسالة الترقية</label>
+                <input type="text" id="leveling-message"
+                       value="<%= settings.leveling?.levelUpMessage || '🎉 تهانينا {member}! وصلت للمستوى **{level}**!' %>"
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                <p class="text-xs text-gray-500 mt-1">متغيرات: <code class="text-indigo-400">{member}</code> <code class="text-indigo-400">{level}</code> <code class="text-indigo-400">{user}</code></p>
+            </div>
+        </div>
+
+        <%# ===== Blacklist ===== %>
+        <div class="border-t border-gray-700 pt-6 mb-8">
+            <h3 class="text-lg font-semibold text-white mb-4">🚫 الاستثناءات</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">القنوات المستثناة</label>
+                    <select id="leveling-blacklist-channels" multiple class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white min-h-[120px]">
+                        <% channels.forEach(ch => { %>
+                            <option value="<%= ch.id %>" <%= (settings.leveling?.blacklistedChannels || []).includes(ch.id) ? 'selected' : '' %>>#<%= ch.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الرتب المستثناة</label>
+                    <select id="leveling-blacklist-roles" multiple class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white min-h-[120px]">
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>" <%= (settings.leveling?.blacklistedRoles || []).includes(role.id) ? 'selected' : '' %>><%= role.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <%# ===== Level Roles ===== %>
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white">🎖️ رتب المستويات</h3>
+                <button id="add-level-role" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm transition-all">
+                    <i class="fas fa-plus mr-1"></i> إضافة رتبة
+                </button>
+            </div>
+
+            <div id="level-roles-list" class="space-y-3 mb-4">
+                <% (settings.leveling?.levelRoles || []).forEach((lr, i) => { %>
+                    <div class="level-role-row flex items-center gap-3 bg-gray-700 rounded-lg p-3" data-index="<%= i %>">
+                        <span class="text-gray-300 text-sm w-24">عند المستوى:</span>
+                        <input type="number" class="lr-level w-24 px-2 py-1 bg-gray-600 rounded text-white text-sm" value="<%= lr.level %>" min="1">
+                        <span class="text-gray-300 text-sm">الرتبة:</span>
+                        <select class="lr-role flex-1 px-2 py-1 bg-gray-600 rounded text-white text-sm">
+                            <% roles.forEach(role => { %>
+                                <option value="<%= role.id %>" <%= lr.roleId === role.id ? 'selected' : '' %>><%= role.name %></option>
+                            <% }) %>
+                        </select>
+                        <button class="remove-level-role text-red-400 hover:text-red-300" data-index="<%= i %>">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div id="no-level-roles" class="text-center text-gray-500 py-4 <%= (settings.leveling?.levelRoles || []).length ? 'hidden' : '' %>">
+                لا توجد رتب مستويات. أضف رتبة تُعطى تلقائياً عند الوصول لمستوى معين.
+            </div>
+
+            <div id="add-role-template" class="hidden">
+                <select class="roles-template">
+                    <% roles.forEach(role => { %>
+                        <option value="<%= role.id %>"><%= role.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="save-bar" id="saveBar">
+            <div class="save-bar-content">
+                <div class="save-bar-text">
+                    <i class="fas fa-info-circle"></i>
+                    <span>لديك تغييرات غير محفوظة</span>
+                </div>
+                <div class="save-bar-buttons">
+                    <button class="reset-button" id="resetLeveling">
+                        <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                    <button class="save-button" id="saveLeveling">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,121 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+build/
+
+# Environment and config
+.env
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# TypeScript cache
+*.tsbuildinfo
+.tscache/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+temp/
+tmp/
+.temp/
+.tmp/
+
+# Bot specific
+token.txt
+bot_config.json
+dashboard/credentials.json
+
+# Local development
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Dependency directories
+jspm_packages/
+
+# Log files
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Cache directories
+.npm/
+.eslintcache
+.node_repl_history
+.yarn-integrity
+
+# Debug logs
+debug/
+.debug/
+
+# IDE and editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.project
+.settings/
+.classpath
+*.sublime-workspace
+*.sublime-project
+
+# Coverage directories
+lib-cov/
+
+# Backup files
+backups/
+*.bak
+*.backup
+*~
+
+# Docker volumes
+data/
+db-data/
+
+# Compiled binary addons
+build/Release/
+
+# Application specific
+uploads/
+.cache/
+assets/generated/
+
+# MongoDB data
+data/db/
+
+# Generated files
+generated/
+
+# Local personal notes
+NOTES.md
+TODO.md
+
+# Discord.js specific
+deploy-commands.js.backup
+
+# Keep .gitkeep files
+!/**/.gitkeep
+
+# Keep example env file
+!.env.example 

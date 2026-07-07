@@ -1,0 +1,466 @@
+<%- contentFor('body') %>
+
+<div class="space-y-6">
+    <div class="stats-grid">
+        <div class="stat-card blue-glow">
+            <div class="stat-icon text-blue-500">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value" id="activeTickets">0</h3>
+                <p class="stat-label"><%= locale.dashboard.tickets.stats.activeTickets %></p>
+            </div>
+        </div>
+        
+        <div class="stat-card green-glow">
+            <div class="stat-icon text-green-500">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value" id="adminRoles">0</h3>
+                <p class="stat-label"><%= locale.dashboard.tickets.stats.adminRoles %></p>
+            </div>
+        </div>
+
+        <div class="stat-card purple-glow">
+            <div class="stat-icon text-purple-500">
+                <i class="fas fa-folder"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value" id="categories">0</h3>
+                <p class="stat-label"><%= locale.dashboard.tickets.stats.categories %></p>
+            </div>
+        </div>
+
+        <div class="stat-card red-glow">
+            <div class="stat-icon text-red-500">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value" id="avgCooldown">0h</h3>
+                <p class="stat-label"><%= locale.dashboard.tickets.stats.avgCooldown %></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white"><%= locale.dashboard.tickets.title %></h2>
+            <div class="flex items-center space-x-4">
+                <button id="addTicketSection" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all">
+                    <i class="fas fa-plus mr-2"></i>
+                    <%= locale.dashboard.tickets.addSection %>
+                </button>
+                <button id="enableAllTickets" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <%= locale.dashboard.tickets.enableAll %>
+                </button>
+                <button id="disableAllTickets" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
+                    <i class="fas fa-times-circle mr-2"></i>
+                    <%= locale.dashboard.tickets.disableAll %>
+                </button>
+            </div>
+        </div>
+
+        <div class="px-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3><%= locale.dashboard.tickets.globalSettings %></h3>
+                    </div>
+                    <label class="switch-large">
+                        <input type="checkbox" id="ticket-enabled" 
+                               <%= settings.ticket?.enabled ? 'checked' : '' %>>
+                        <span class="slider-large"></span>
+                    </label>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.embedColor %>
+                            </label>
+                            <input type="color" id="ticket-embed-color" 
+                                   value="<%= settings.ticket?.embed?.color || '#3498db' %>"
+                                   class="w-full h-10 rounded-lg cursor-pointer">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.thumbnailUrl %>
+                            </label>
+                            <input type="text" id="ticket-embed-thumbnail"
+                                   value="<%= settings.ticket?.embed?.thumbnail || '' %>"
+                                   class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.footerText %>
+                            </label>
+                            <input type="text" id="ticket-embed-footer"
+                                   value="<%= settings.ticket?.embed?.footer || '' %>"
+                                   class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.footerIcon %>
+                            </label>
+                            <input type="text" id="ticket-embed-footerIcon"
+                                   value="<%= settings.ticket?.embed?.footerIcon || '' %>"
+                                   class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        </div>
+                    </div>
+
+                    <%# ===== Required Server Section ===== %>
+                    <div class="mt-8 border-t border-gray-700 pt-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h4 class="text-lg font-semibold text-white">🔐 سيرفر مطلوب للتذاكر</h4>
+                                <p class="text-sm text-gray-400 mt-1">اشترط على المستخدم الانضمام لسيرفر معين قبل فتح تذكرة</p>
+                            </div>
+                            <label class="switch-large">
+                                <input type="checkbox" id="required-server-enabled"
+                                       <%= settings.ticket?.requiredServer?.enabled ? 'checked' : '' %>>
+                                <span class="slider-large"></span>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    🆔 ID السيرفر المطلوب
+                                </label>
+                                <input type="text" id="required-server-guildId"
+                                       value="<%= settings.ticket?.requiredServer?.guildId || '' %>"
+                                       placeholder="123456789012345678"
+                                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500">
+                                <p class="text-xs text-gray-500 mt-1">الـ ID الخاص بالسيرفر الذي يجب أن ينضم إليه المستخدم</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    🔗 لينك الدعوة
+                                </label>
+                                <input type="text" id="required-server-inviteUrl"
+                                       value="<%= settings.ticket?.requiredServer?.inviteUrl || '' %>"
+                                       placeholder="https://discord.gg/xxxxxxx"
+                                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500">
+                                <p class="text-xs text-gray-500 mt-1">سيظهر هذا اللينك للمستخدم في الرسالة</p>
+                            </div>
+
+                            <div class="form-group md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    💬 رسالة الرفض
+                                </label>
+                                <input type="text" id="required-server-message"
+                                       value="<%= settings.ticket?.requiredServer?.message || '❌ يجب عليك الانضمام إلى سيرفرنا أولاً حتى تتمكن من فتح تذكرة!' %>"
+                                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                                <p class="text-xs text-gray-500 mt-1">الرسالة التي ستظهر للمستخدم إذا لم يكن منضماً للسيرفر</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% (settings.ticket?.sections || []).forEach((section, index) => { %>
+                <div class="ticket-section bg-white dark:bg-gray-800 rounded-lg shadow-md" data-section="<%= index %>">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="<%= section.emoji || 'fas fa-ticket-alt' %>"></i>
+                            </div>
+                            <h3><%= section.name %></h3>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button class="delete-section text-red-500 hover:text-red-600"
+                                    data-section="<%= index %>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <label class="switch-large">
+                                <input type="checkbox" class="section-toggle"
+                                       data-section="<%= index %>"
+                                       <%= section.enabled ? 'checked' : '' %>>
+                                <span class="slider-large"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.sectionName %>
+                            </label>
+                            <input type="text" class="section-name input-field"
+                                   value="<%= section.name %>"
+                                   data-section="<%= index %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.emoji %>
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" class="section-emoji input-field flex-1"
+                                       value="<%= section.emoji %>"
+                                       data-section="<%= index %>">
+                                <button type="button" class="emoji-picker-btn px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
+                                    <i class="fas fa-smile"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.description %>
+                            </label>
+                            <textarea class="section-description input-field"
+                                      data-section="<%= index %>"
+                                      rows="3"><%= section.description %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.categoryId %>
+                            </label>
+                            <select class="section-category input-field"
+                                    data-section="<%= index %>">
+                                <option value="">Select Category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.id %>" 
+                                            <%= section.categoryId === category.id ? 'selected' : '' %>>
+                                        <%= category.name %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.logChannel %>
+                            </label>
+                            <select class="section-logChannel input-field"
+                                    data-section="<%= index %>">
+                                <option value="">Select Log Channel</option>
+                                <% channels.forEach(channel => { %>
+                                    <option value="<%= channel.id %>"
+                                            <%= section.logChannelId === channel.id ? 'selected' : '' %>>
+                                        #<%= channel.name %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.adminRoles %>
+                            </label>
+                            <select class="section-adminRoles input-field" multiple
+                                    data-section="<%= index %>">
+                                <% roles.forEach(role => { %>
+                                    <option value="<%= role.id %>"
+                                            <%= section.adminRoles.includes(role.id) ? 'selected' : '' %>
+                                            style="color: '<%= role.color %>'">
+                                        <%= role.name %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.cooldown %>
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="number" class="section-cooldown input-field"
+                                       value="<%= section.cooldown %>"
+                                       min="0"
+                                       data-section="<%= index %>">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">hours</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.imageUrl %>
+                            </label>
+                            <input type="text" class="section-imageUrl input-field"
+                                   value="<%= section.imageUrl %>"
+                                   data-section="<%= index %>">
+                        </div>
+
+                        <% if (section.imageUrl) { %>
+                            <div class="mt-2">
+                                <img src="<%= section.imageUrl %>" 
+                                     alt="Section Image"
+                                     class="rounded-lg max-h-32 object-cover">
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+
+            <div id="newSectionForm" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="section-header mb-6">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <h3><%= locale.dashboard.tickets.addSection %></h3>
+                    </div>
+                    <label class="switch-large">
+                        <input type="checkbox" id="new-section-enabled" checked>
+                        <span class="slider-large"></span>
+                    </label>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.sectionName %>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="new-section-name" required
+                               class="input-field" placeholder="Enter section name">
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.emoji %>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="new-section-emoji" required
+                                   class="input-field flex-1" placeholder="👋">
+                            <button type="button" class="emoji-picker-btn px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                        </div>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.description %>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="new-section-description" required rows="3"
+                                  class="input-field" placeholder="Enter section description"></textarea>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.categoryId %>
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <select id="new-section-category" required class="input-field">
+                                <option value="">Select Category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.id %>"><%= category.name %></option>
+                                <% }) %>
+                            </select>
+                            <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <%= locale.dashboard.tickets.logChannel %>
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <select id="new-section-logChannel" required class="input-field">
+                                <option value="">Select Log Channel</option>
+                                <% channels.forEach(channel => { %>
+                                    <option value="<%= channel.id %>">#<%= channel.name %></option>
+                                <% }) %>
+                            </select>
+                            <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.adminRoles %>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <select id="new-section-adminRoles" multiple required class="input-field min-h-[120px]">
+                            <% roles.forEach(role => { %>
+                                <option value="<%= role.id %>" style="color: '<%= role.color %>'">
+                                    <%= role.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.cooldown %>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="new-section-cooldown" required
+                                   class="input-field" min="0" value="24">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">hours</span>
+                        </div>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <%= locale.dashboard.tickets.imageUrl %>
+                        </label>
+                        <input type="text" id="new-section-imageUrl"
+                               class="input-field" placeholder="https://example.com/image.png">
+                        <div class="error-message text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+
+                    <div id="new-section-preview" class="mt-2 hidden">
+                        <img src="" alt="Section Preview" class="rounded-lg max-h-32 object-cover">
+                    </div>
+
+                    <div class="flex justify-end gap-4 mt-8">
+                        <button type="button" id="clearNewSection"
+                                class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all">
+                            <i class="fas fa-undo mr-2"></i>
+                            <%= locale.dashboard.common.reset %>
+                        </button>
+                        <button type="button" id="addNewSection"
+                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all">
+                            <i class="fas fa-plus mr-2"></i>
+                            <%= locale.dashboard.common.add %>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-bar" id="saveBar">
+            <div class="save-bar-content">
+                <div class="save-bar-text">
+                    <i class="fas fa-info-circle"></i>
+                    <span><%= locale.dashboard.common.unsavedChanges %></span>
+                </div>
+                <div class="save-bar-buttons">
+                    <button class="reset-button" id="resetTicketSettings">
+                        <i class="fas fa-undo"></i>
+                        <%= locale.dashboard.common.resetDefaults %>
+                    </button>
+                    <button class="save-button" id="saveTicketSettings">
+                        <i class="fas fa-save"></i>
+                        <%= locale.dashboard.common.saveChanges %>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

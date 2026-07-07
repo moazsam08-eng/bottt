@@ -1,0 +1,30 @@
+{
+    "watch": [
+        "src",
+        "dashboard",
+        "index.ts",
+        "config.ts",
+        ".env",
+        "settings.json"
+    ],
+    "ext": "ts,json,ejs",
+    "ignore": [
+        "src/**/*.spec.ts",
+        "src/**/*.test.ts",
+        "node_modules",
+        "dist",
+        "**/*.d.ts",
+        ".git",
+        "package.json",
+        "package-lock.json"
+    ],
+    "exec": "ts-node index.ts",
+    "events": {
+        "restart": "echo '\n>> Restarting due to changes...\n'"
+    },
+    "delay": "500",
+    "env": {
+        "NODE_ENV": "development",
+        "TS_NODE_PROJECT": "./tsconfig.json"
+    }
+} 
